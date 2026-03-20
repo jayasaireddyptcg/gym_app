@@ -17,7 +17,7 @@ router = APIRouter()
 
 @router.post("/register")
 async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
-    logger.info(f"Registration request received: {user}")
+    logger.info("Registration request received for email=%s", user.email)
     
     result = await db.execute(select(User).where(User.email == user.email))
     existing = result.scalar_one_or_none()
@@ -40,7 +40,7 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
 
 @router.post("/login")
 async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
-    logger.info(f"Login request received: {user}")
+    logger.info("Login request received for email=%s", user.email)
     
     result = await db.execute(select(User).where(User.email == user.email))
     db_user = result.scalar_one_or_none()

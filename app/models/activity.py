@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Date, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, Integer, Float, Date, ForeignKey, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from app.models.base import Base
 import uuid
@@ -12,7 +12,7 @@ class ActivityLog(Base):
     date = Column(Date)
     steps = Column(Integer, default=0)
     calories = Column(Integer, default=0)
-    distance = Column(Integer, default=0)
+    distance = Column(Float, default=0)
 
     __table_args__ = (
         UniqueConstraint("user_id", "date", name="unique_user_date"),

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Optional
 import logging
 
@@ -6,7 +6,7 @@ from app.models.user import User
 from app.api.deps import get_current_user
 
 logger = logging.getLogger(__name__)
-router = APIRouter()
+router = APIRouter(tags=["exercises"])
 
 EXERCISES = [
     {
@@ -274,7 +274,7 @@ async def get_exercise(
     exercise = next((e for e in EXERCISES if e["id"] == exercise_id), None)
     
     if not exercise:
-        return {"success": False, "error": {"message": "Exercise not found"}}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exercise not found")
     
     return {
         "success": True,
