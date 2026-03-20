@@ -174,13 +174,15 @@ async def scan_equipment(
     if not normalized:
         return error_response("UNKNOWN_EQUIPMENT", "Equipment not recognized")
 
+    confidence = float(validated.get("confidence") or 0.8)
+
     try:
         scan = EquipmentScan(
             user_id=current_user.id,
             equipment_id=normalized["id"],
-            confidence=validated.get("confidence", 0.8),
+            confidence=confidence,
             muscles=normalized["muscles"],
-            instructions=normalized["instructions"]
+            instructions=normalized["instructions"],
         )
 
         db.add(scan)
@@ -189,4 +191,8 @@ async def scan_equipment(
         await db.rollback()
         return error_response("DB_ERROR", "Failed to save data")
 
-    return success_response(normalized)
+    payload = {
+        **normalized,
+        "confidence": confidence,
+    }
+    return success_response(payload)

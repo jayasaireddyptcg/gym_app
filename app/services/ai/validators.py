@@ -1,21 +1,18 @@
-ALLOWED_EQUIPMENT = {
-    "lat pulldown",
-    "treadmill",
-    "bench press",
-    "leg press",
-    "dumbbells",
-    "barbell"
-}
+from app.services.ai.equipment_catalog import match_equipment_key
+
 
 def validate_equipment(ai_output: dict):
     equipment = ai_output.get("equipment")
-
-    if equipment not in ALLOWED_EQUIPMENT:
+    if equipment is None:
         return None
+    e = str(equipment).strip().lower().replace("’", "'")
+    if e == "unknown":
+        return None
+    key = match_equipment_key(e)
+    if not key:
+        return None
+    return {**ai_output, "equipment": key}
 
-    return ai_output
-
-from app.services.ai.food_db import FOOD_DB
 
 def validate_food_items(items: list):
     valid_items = []
@@ -106,12 +103,12 @@ def validate_food_items(items: list):
         "ketchup": ["ketchup", "catsup"],
         "mustard": ["mustard", "yellow mustard", "dijon mustard"],
         "mayo": ["mayo", "mayonnaise"],
-        "ranch": ["ranch", "ranch dressing"]
+        "ranch": ["ranch", "ranch dressing"],
     }
 
     for item in items:
         item_lower = item.lower().strip()
-        
+
         for food_name, synonyms in food_synonyms.items():
             if item_lower in synonyms:
                 valid_items.append(food_name)

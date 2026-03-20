@@ -1,41 +1,16 @@
-EQUIPMENT_DB = {
-    "lat pulldown": {
-        "id": "LAT_PULLDOWN",
-        "muscles": ["lats", "biceps"],
-        "instructions": "Pull bar to chest with controlled motion"
-    },
-    "treadmill": {
-        "id": "TREADMILL",
-        "muscles": ["legs", "cardio"],
-        "instructions": "Walk or run at steady pace"
-    },
-    "bench press": {
-        "id": "BENCH_PRESS",
-        "muscles": ["chest", "triceps", "shoulders"],
-        "instructions": "Lower bar to chest and press up with controlled motion"
-    },
-    "leg press": {
-        "id": "LEG_PRESS",
-        "muscles": ["quads", "glutes", "hamstrings"],
-        "instructions": "Push platform away with legs, then return slowly"
-    },
-    "dumbbells": {
-        "id": "DUMBBELLS",
-        "muscles": ["arms", "shoulders", "chest"],
-        "instructions": "Use controlled movements for various exercises"
-    },
-    "barbell": {
-        "id": "BARBELL",
-        "muscles": ["full_body", "compound"],
-        "instructions": "Use proper form for lifts like squats, deadlifts, presses"
-    }
-}
+import copy
 
-def normalize_equipment(label: str):
-    label = label.lower()
+from app.services.ai.equipment_catalog import EQUIPMENT_DB, match_equipment_key
 
-    for key in EQUIPMENT_DB:
-        if key in label:
-            return EQUIPMENT_DB[key]
 
-    return None
+def normalize_equipment(canonical_key: str):
+    """
+    Return a deep copy of catalog entry for a canonical equipment key
+    (as produced by validate_equipment / match_equipment_key).
+    """
+    key = canonical_key
+    if key not in EQUIPMENT_DB:
+        key = match_equipment_key(canonical_key) or ""
+    if not key or key not in EQUIPMENT_DB:
+        return None
+    return copy.deepcopy(EQUIPMENT_DB[key])
