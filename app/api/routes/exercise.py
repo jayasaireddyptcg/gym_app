@@ -4,6 +4,7 @@ import logging
 
 from app.models.user import User
 from app.api.deps import get_current_user
+from app.services.ai.equipment_catalog import EQUIPMENT_DB, match_equipment_key
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["exercises"])
@@ -276,7 +277,31 @@ async def get_exercise(
     if not exercise:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exercise not found")
     
+    variations = []
+    try:
+        canonical_key = match_equipment_key(exercise.get("name"))
+        if not canonical_key:
+            name = str(exercise.get("name") or "").lower().strip()
+            exercise_to_equipment = {
+                "deadlift": "barbell",
+                "lunges": "dumbbells",
+                "lunge": "dumbbells",
+                "plank": "yoga mat",
+                "push up": "resistance bands",
+                "push-up": "resistance bands",
+                "pushups": "resistance bands",
+            }
+            canonical_key = exercise_to_equipment.get(name)
+        if canonical_key and canonical_key in EQUIPMENT_DB:
+            variations = EQUIPMENT_DB[canonical_key].get("exercises", []) or []
+    except Exception:
+        # If the catalog match fails, keep variations empty to avoid breaking library UX.
+        variations = []
+
     return {
         "success": True,
-        "data": exercise
+        "data": {
+            **exercise,
+            "variations": variations,
+        },
     }

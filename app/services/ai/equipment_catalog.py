@@ -260,6 +260,21 @@ RICH_OVERRIDES: dict[str, dict[str, Any]] = {
                 ["Lateral deltoids"],
                 "Slight bend in elbows; stop at shoulder height if impingement-prone.",
             ),
+            _exercise(
+                "Dumbbell walking lunges",
+                ["Quads", "Glutes", "Core"],
+                "Take controlled steps; keep torso tall and knee tracking over toes.",
+            ),
+            _exercise(
+                "Dumbbell reverse lunges",
+                ["Quads", "Glutes", "Hamstrings", "Core"],
+                "Step back into a stable lunge; drive through the front heel to stand.",
+            ),
+            _exercise(
+                "Dumbbell split squat",
+                ["Quads", "Glutes"],
+                "Front foot planted; keep hips square and control the descent.",
+            ),
         ],
         "tips": "Rubber-hex DBs for home; avoid dropping on hard floors.",
     },
@@ -523,10 +538,34 @@ def _default_entry(key: str) -> dict[str, Any]:
             _exercise("Footwork + strikes", ["Coordination"], "Light speed, crisp form."),
             _exercise("Finisher circuit", ["Metabolic"], "Low skill moves only when fatigued."),
         ]
+    elif "yoga mat" in k:
+        muscles = ["Core (floor control)", "Shoulders (stability)", "Glutes (hip control)"]
+        mv = "Floor-based core control; keep breathing steady and form strict."
+        exercises = [
+            _exercise(
+                "Forearm plank",
+                ["Core"],
+                "Elbows under shoulders; squeeze glutes; breathe slow.",
+            ),
+            _exercise(
+                "High plank",
+                ["Core", "Shoulders"],
+                "Hands under shoulders; neutral spine; don't sag hips.",
+            ),
+            _exercise(
+                "Side plank",
+                ["Obliques", "Core"],
+                "Stack hips; reach top arm; keep ribs down.",
+            ),
+            _exercise(
+                "Plank shoulder taps",
+                ["Core"],
+                "Tap opposite shoulder without rotating—move slowly and control.",
+            ),
+        ]
     elif any(
         w in k
         for w in (
-            "yoga mat",
             "foam roller",
             "stretch",
             "cool down",
@@ -545,8 +584,16 @@ def _default_entry(key: str) -> dict[str, Any]:
         mv = "Use for warm-up, cooldown, hydration, and tissue care—not a replacement for progressive strength work."
         exercises = [
             _exercise("Dynamic warm-up", ["Mobility"], "5–10 min before lifting."),
-            _exercise("Static stretch post-session", ["Flexibility"], "30–60s per muscle group."),
-            _exercise("Foam roll major groups", ["Tissue comfort"], "Quads, lats, thoracic—slow passes."),
+            _exercise(
+                "Static stretch post-session",
+                ["Flexibility"],
+                "30–60s per muscle group.",
+            ),
+            _exercise(
+                "Foam roll major groups",
+                ["Tissue comfort"],
+                "Quads, lats, thoracic—slow passes.",
+            ),
             _exercise("Hydration & electrolytes", ["Performance"], "Sip through workout; more in heat."),
         ]
     elif any(w in k for w in ("jump rope", "ladder", "cone", "hurdle", "agility")):
