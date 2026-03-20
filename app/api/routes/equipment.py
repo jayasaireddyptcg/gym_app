@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends
+import base64
+
+from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -10,6 +12,7 @@ from app.services.ai.validators import validate_equipment
 from app.api.deps import get_current_user
 from app.models.user import User
 from app.utils.response import success_response, error_response
+from app.core.logger import logger
 
 router = APIRouter()
 
@@ -123,11 +126,32 @@ Rules:
 
 @router.post("/scan")
 async def scan_equipment(
-    image_url: str,
+    file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
-    raw = await analyze_image_safe(EQUIPMENT_PROMPT, image_url)
+    if not file.content_type or not file.content_type.startswith("image/"):
+        return error_response("INVALID_FILE", "File must be an image")
+
+    max_size = 10 * 1024 * 1024
+    file_content = await file.read()
+
+    if len(file_content) > max_size:
+        return error_response("FILE_TOO_LARGE", "Image file must be less than 10MB")
+
+    try:
+        image_base64 = base64.b64encode(file_content).decode("utf-8")
+        mime_type = file.content_type or "image/jpeg"
+        data_url = f"data:{mime_type};base64,{image_base64}"
+        logger.info(
+            "Equipment scan upload: %s, %s bytes",
+            file.filename,
+            len(file_content),
+        )
+        raw = await analyze_image_safe(EQUIPMENT_PROMPT, data_url)
+    except Exception as e:
+        logger.error("Equipment scan read failed: %s", e)
+        return error_response("INVALID_FILE", "Could not read image upload")
 
     if not raw:
         return error_response("AI_TIMEOUT", "AI service unavailable")

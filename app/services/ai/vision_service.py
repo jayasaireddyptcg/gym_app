@@ -44,8 +44,8 @@ async def analyze_image(prompt: str, image_url: str):
                     "role": "user", 
                     "content": [
                         {
-                            "type": "text", 
-                            "text": "Analyze this image for food items and nutritional information."
+                            "type": "text",
+                            "text": "Analyze this image according to the system instructions.",
                         },
                         {
                             "type": "image_url", 
@@ -85,8 +85,8 @@ async def analyze_image(prompt: str, image_url: str):
                     "role": "user", 
                     "content": [
                         {
-                            "type": "text", 
-                            "text": "Analyze this image for food items and nutritional information."
+                            "type": "text",
+                            "text": "Analyze this image according to the system instructions.",
                         },
                         {
                             "type": "image_url", 
